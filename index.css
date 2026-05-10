@@ -125,3 +125,31 @@
 .error {
   color: red;
 }
+
+/* ════════════════ CƠ CHẾ CHỐNG TẢI / KÉO THẢ ẢNH ════════════════ */
+
+/*
+  Ngăn chặn menu ngữ cảnh (right-click / long-press) trên ảnh.
+  Chỉ áp dụng cho ảnh trong khu vực preview kết quả.
+  Dùng class .no-save để dễ dàng kiểm soát.
+*/
+.no-save img,
+img[data-no-save] {
+  -webkit-touch-callout: none; /* iOS: tắt menu "Save Image" */
+  -webkit-user-drag: none;      /* macOS: tắt kéo ảnh */
+  user-select: none;            /* tắt chọn ảnh */
+  pointer-events: none;         /* vô hiệu hóa tất cả tương tác chuột / touch */
+}
+
+/*
+  Nếu bạn muốn chặn TRÊN TOÀN BỘ ảnh trong ứng dụng,
+  hãy bỏ comment block bên dưới. Lưu ý: điều này có thể ảnh hưởng
+  đến UX của các ảnh không cần bảo vệ.
+*/
+/*
+img {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+*/
