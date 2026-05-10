@@ -1,0 +1,7 @@
+{
+  "name": "Remix: Photo Studio AI - Chuyên nghiệp \u0026 Sinh trắc học 5",
+  "description": "Tạo ảnh thẻ chân dung chuyên nghiệp 4K với ánh sáng studio 3 điểm và bảo toàn nhận dạng khuôn mặt tuyệt đối.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

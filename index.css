@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-apple-bg: #f5f5f7;
+  --color-apple-text: #1d1d1f;
+  --color-apple-secondary: #86868b;
+  --color-apple-blue: #0066cc;
+  --color-apple-card: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply bg-apple-bg text-apple-text antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ════════════════ Camera Capture Styles (KYC) ════════════════ */
+
+.camera-container {
+  text-align: center;
+  padding: 10px;
+}
+
+.video-feed {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 16px;
+}
+
+.camera-view {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.face-frame {
+  width: 80%;
+  max-width: 300px;
+  aspect-ratio: 3 / 4;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.3s ease;
+}
+
+.face-frame.too-close {
+  border-color: #fbbf24;
+}
+
+.face-frame.too-far {
+  border-color: #f87171;
+}
+
+.face-frame.ideal {
+  border-color: #34d399;
+}
+
+.guide-text {
+  color: white;
+  margin-top: 20px;
+  font-size: 14px;
+  text-shadow: 0 1px 3px black;
+}
+
+.countdown-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  color: white;
+  text-shadow: 0 0 20px black;
+}
+
+.controls {
+  margin-top: 10px;
+}
+
+.controls button {
+  margin: 0 5px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #1a73e8;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.controls button:disabled {
+  opacity: 0.6;
+}
+
+.error {
+  color: red;
+}
