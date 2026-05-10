@@ -198,7 +198,6 @@ const ENHANCEMENTS = [
   },
 ];
 
-// Giới hạn dung lượng history trong localStorage (~5MB tổng)
 const MAX_HISTORY_ITEMS = 8;
 
 // ─────────────────────────────────────────────────────
@@ -296,7 +295,6 @@ const VisualGuide = ({ sub }: { sub: SubCategory }) => (
   </div>
 );
 
-// Watermark nhẹ hiển thị khi chưa thanh toán
 const Watermark = () => (
   <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10 select-none z-20">
     <div className="flex flex-wrap gap-x-12 gap-y-12 rotate-[-30deg] scale-150 origin-center justify-center items-center h-full w-full">
@@ -313,7 +311,7 @@ const Watermark = () => (
 );
 
 // ─────────────────────────────────────────────────────
-// IMAGE PREVIEW – tích hợp bảo vệ ảnh từ V1
+// IMAGE PREVIEW – tích hợp bảo vệ ảnh
 // ─────────────────────────────────────────────────────
 const ImagePreview = ({
   original,
@@ -330,9 +328,8 @@ const ImagePreview = ({
   isLoading: boolean;
   loadingMessage: string;
   showComparison: boolean;
-  isPaid: boolean;  // ← nhận từ V1: dùng để bật/tắt bảo vệ ảnh
+  isPaid: boolean;
 }) => {
-  // Chặn mọi hành vi tải ảnh khi chưa thanh toán
   const preventDownload = (e: React.SyntheticEvent) => {
     if (isPaid) return;
     e.preventDefault();
@@ -365,7 +362,6 @@ const ImagePreview = ({
           <div className="w-full h-full relative group">
             <Watermark />
 
-            {/* Badge trái */}
             <div className="absolute top-6 left-6 z-40 flex items-center gap-2 px-3 py-1.5 bg-apple-text/80 backdrop-blur-md rounded-full border border-white/20">
               <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
               <span className="text-[10px] font-bold text-white uppercase tracking-wider">
@@ -373,7 +369,6 @@ const ImagePreview = ({
               </span>
             </div>
 
-            {/* Badge phải */}
             <div className="absolute top-6 right-6 z-40 flex items-center gap-2 px-3 py-1.5 bg-apple-blue/80 backdrop-blur-md rounded-full border border-white/20">
               <Zap className="w-3.5 h-3.5 text-yellow-400" />
               <span className="text-[10px] font-bold text-white uppercase tracking-wider">
@@ -381,7 +376,6 @@ const ImagePreview = ({
               </span>
             </div>
 
-            {/* Lớp phủ trong suốt chặn tải ảnh khi chưa thanh toán */}
             {!isPaid && (
               <div
                 className="absolute inset-0 z-30"
@@ -518,7 +512,6 @@ export default function App() {
     [activeSubId]
   );
 
-  // URL object blob – revoke khi không còn dùng để tránh memory leak
   const originalImageUrl = useMemo(() => {
     if (!originalImage) return null;
     const url = URL.createObjectURL(originalImage);
@@ -531,17 +524,15 @@ export default function App() {
     };
   }, [originalImageUrl]);
 
-  // Load history từ localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem('photo-studio-history');
       if (saved) setHistory(JSON.parse(saved));
     } catch {
-      // localStorage có thể bị hỏng, bỏ qua
+      // localStorage corrupted, ignore
     }
   }, []);
 
-  // Kiểm tra premium API key (AI Studio)
   useEffect(() => {
     const checkKey = async () => {
       try {
@@ -563,7 +554,6 @@ export default function App() {
     }
   };
 
-  // Xử lý upload file – validate type & size
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -583,11 +573,9 @@ export default function App() {
     setIsConfirmed(false);
     setIsPaid(false);
     setError(null);
-    // Reset input để có thể upload cùng file lại
     e.target.value = '';
   };
 
-  // Xử lý ảnh từ camera
   const handleCameraCapture = async (base64DataUrl: string) => {
     try {
       const res = await fetch(base64DataUrl);
@@ -652,7 +640,6 @@ export default function App() {
 
       const fullOutfit = `${outfit} màu ${shirtColor.name}`;
 
-      // Chọn model: premium nếu có key AI Studio
       const model = hasPremiumKey
         ? 'gemini-3.1-flash-image-preview'
         : 'gemini-2.5-flash-preview-05-20';
@@ -670,7 +657,6 @@ export default function App() {
       const url = `data:image/jpeg;base64,${result}`;
       setGeneratedImageUrl(url);
 
-      // Lưu history (giới hạn số lượng để tránh localStorage đầy)
       const newItem: HistoryItem = {
         id: Date.now().toString(),
         imageUrl: url,
@@ -705,7 +691,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-apple-bg text-apple-text font-sans selection:bg-apple-blue/10">
 
-      {/* Camera overlay */}
       {showCamera && (
         <CameraCapture
           onCapture={handleCameraCapture}
@@ -713,7 +698,6 @@ export default function App() {
         />
       )}
 
-      {/* ── Header ── */}
       <header className="container mx-auto max-w-5xl px-6 py-20 text-center space-y-8">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-apple-card border border-slate-200 text-apple-secondary text-xs font-bold uppercase tracking-widest mb-4 animate-fade-in shadow-sm">
           <Sparkles className="w-3.5 h-3.5 text-apple-blue" />
@@ -727,7 +711,6 @@ export default function App() {
           giữ nguyên danh tính sinh trắc học 100% với chất lượng Studio.
         </p>
 
-        {/* Premium key button */}
         <div className="flex justify-center pt-4">
           {!hasPremiumKey ? (
             <button
@@ -757,11 +740,9 @@ export default function App() {
         </div>
       </header>
 
-      {/* ── Main ── */}
       <main className="container mx-auto max-w-5xl px-6 pb-32">
         <div className="space-y-20">
 
-          {/* Chọn loại ảnh */}
           <section className="space-y-10 animate-fade-in">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -813,7 +794,6 @@ export default function App() {
                 animate={{ opacity: 1 }}
                 className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start"
               >
-                {/* Thông tin ảnh */}
                 <VisualGuide
                   sub={{
                     ...activeSub!,
@@ -825,9 +805,7 @@ export default function App() {
                   }}
                 />
 
-                {/* Tương tác */}
                 <div className="space-y-10">
-                  {/* Cam kết */}
                   <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-start gap-3">
                     <FileCheck className="w-5 h-5 text-apple-blue shrink-0 mt-0.5" />
                     <div>
@@ -842,7 +820,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Tải ảnh */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-bold tracking-tight">Tải ảnh lên</h3>
 
@@ -895,7 +872,6 @@ export default function App() {
                     ) : null}
                   </div>
 
-                  {/* Trang phục & màu */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-6">
                       <h3 className="text-lg font-bold tracking-tight text-apple-text">
@@ -904,7 +880,6 @@ export default function App() {
                       <textarea
                         value={outfit}
                         onChange={e => {
-                          // Giới hạn độ dài để tránh prompt injection
                           if (e.target.value.length <= 300)
                             setOutfit(e.target.value);
                         }}
@@ -928,7 +903,6 @@ export default function App() {
                         ))}
                       </div>
 
-                      {/* Màu áo */}
                       <div className="space-y-4 pt-4 border-t border-apple-bg">
                         <h4 className="text-sm font-bold tracking-tight text-apple-secondary uppercase">
                           Màu áo
@@ -960,7 +934,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Chỉnh sửa & làm đẹp */}
                       <div className="space-y-4 pt-4 border-t border-apple-bg">
                         <h4 className="text-sm font-bold tracking-tight text-apple-secondary uppercase">
                           Chỉnh sửa & Làm đẹp
@@ -1000,7 +973,6 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Chọn kích thước */}
                     {activeSub?.availableSizes &&
                       activeSub.availableSizes.length > 1 && (
                         <div className="space-y-6">
@@ -1050,14 +1022,12 @@ export default function App() {
                       )}
                   </div>
 
-                  {/* Thông báo lỗi */}
                   {error && (
                     <div className="p-4 bg-red-50 border border-red-200 rounded-2xl">
                       <p className="text-sm text-red-700 font-medium">{error}</p>
                     </div>
                   )}
 
-                  {/* Nút xử lý */}
                   <button
                     onClick={handleGenerate}
                     disabled={!originalImage || isLoading}
@@ -1075,7 +1045,6 @@ export default function App() {
             )}
           </section>
 
-          {/* Kết quả */}
           {generatedImageUrl && !isLoading && (
             <section className="space-y-12 animate-fade-in border-t border-slate-200 pt-20">
               <div className="text-center space-y-3">
@@ -1211,7 +1180,6 @@ export default function App() {
         </div>
       </main>
 
-      {/* ── History ── */}
       {history.length > 0 && (
         <section className="bg-white border-t border-slate-100 py-24">
           <div className="container mx-auto max-w-5xl px-6 space-y-12">
@@ -1273,7 +1241,6 @@ export default function App() {
         </section>
       )}
 
-      {/* ── Footer ── */}
       <footer className="container mx-auto max-w-5xl px-6 py-20 text-center space-y-4">
         <p className="text-apple-secondary text-xs font-medium max-w-lg mx-auto leading-relaxed opacity-60">
           Ứng dụng sử dụng mô hình AI tiên tiến để xử lý hình ảnh theo tiêu
@@ -1284,7 +1251,6 @@ export default function App() {
         </p>
       </footer>
 
-      {/* Hidden file input */}
       <input
         type="file"
         ref={fileInputRef}
