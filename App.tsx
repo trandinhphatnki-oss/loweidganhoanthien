@@ -512,17 +512,19 @@ export default function App() {
     [activeSubId]
   );
 
-  const originalImageUrl = useMemo(() => {
-    if (!originalImage) return null;
-    const url = URL.createObjectURL(originalImage);
-    return url;
-  }, [originalImage]);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!originalImage) {
+      setOriginalImageUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(originalImage);
+    setOriginalImageUrl(url);
     return () => {
-      if (originalImageUrl) URL.revokeObjectURL(originalImageUrl);
+      URL.revokeObjectURL(url);
     };
-  }, [originalImageUrl]);
+  }, [originalImage]);
 
   useEffect(() => {
     try {
@@ -581,14 +583,20 @@ export default function App() {
       const res = await fetch(base64DataUrl);
       const blob = await res.blob();
 
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(blob.type)) {
+        setError('Định dạng không hỗ trợ. Vui lòng dùng JPG, PNG, hoặc WebP.');
+        setShowCamera(false);
+        return;
+      }
       if (blob.size > 10 * 1024 * 1024) {
-        setError('Ảnh từ camera quá lớn. Vui lòng thử lại.');
+        setError('Ảnh quá lớn (tối đa 10MB). Vui lòng chọn ảnh nhỏ hơn.');
         setShowCamera(false);
         return;
       }
 
       const file = new File([blob], `camera-${Date.now()}.jpg`, {
-        type: 'image/jpeg',
+        type: blob.type,
       });
       setOriginalImage(file);
       setGeneratedImageUrl(null);
